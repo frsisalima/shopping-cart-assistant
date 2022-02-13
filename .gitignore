@@ -1,0 +1,8 @@
+build/
+cmake-build-debug/
+data/networks/
+data/videos/
+data/images/test
+logs/
+*.pyc
+*.tar.gz
