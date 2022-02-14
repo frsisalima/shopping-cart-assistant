@@ -22,7 +22,7 @@ class JetsonEndpoint
 {
 public:
     JetsonEndpoint();
-    JetsonEndpoint(ImageProcessor &imageProcessor, ConfigFile* configFile);
+    JetsonEndpoint(ImageProcessor* imageProcessor, ConfigFile* configFile);
 
     void init(size_t thr = 2);
     void start();
@@ -36,7 +36,7 @@ private:
     std::shared_ptr<Pistache::Http::Endpoint> httpEndpoint;
     Pistache::Rest::Router router;
     ConfigFile* configFile;
-    ImageProcessor imageProcessor;
+    ImageProcessor* imageProcessor;
 };
 
 

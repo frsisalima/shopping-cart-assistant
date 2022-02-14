@@ -34,6 +34,8 @@ public:
     void setDetectionNetworkOutputCvg(std::string cvg);
     void setDetectionLabels(std::string labels);
     void setSegmentationNetwork(std::string network);
+    void setSegmentationClasses(std::string network);
+    void setSegmentationColors(std::string network);
     void setStreamPort(int port);
     void setApiPort(int port);
     void setEnableDraw(bool enable);
@@ -61,6 +63,8 @@ public:
     std::string getDetectionNetworkOutputCvg();
     std::string getDetectionLabels();
     std::string getSegmentationNetwork();
+    std::string getSegmentationClasses();
+    std::string getSegmentationColors();
     int getStreamPort();
     int getApiPort();
     bool getEnableDraw();

@@ -5,7 +5,7 @@
 #include "../headers/JetsonEndpoint.h"
 #include "../headers/ConfigFile.h"
 
-JetsonEndpoint::JetsonEndpoint(ImageProcessor &imageProcessor,ConfigFile* configFile)
+JetsonEndpoint::JetsonEndpoint(ImageProcessor* imageProcessor,ConfigFile* configFile)
         :httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(Pistache::Address(Pistache::Ipv4::any(), Pistache::Port(configFile->getApiPort()))))
 {
     this->configFile = configFile;
@@ -39,11 +39,18 @@ void JetsonEndpoint::setupRoutes()
 
 void JetsonEndpoint::recordConfig(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response)
 {
-    configFile->config= json::parse(request.body());
+    bool initInputVideo=false;
+    nlohmann::json newConfig=json::parse(request.body());
+    if(newConfig["input"]!=configFile->getInput()){
+        initInputVideo = true;
+    }
+    configFile->config= newConfig;
     configFile->save();
     response.send(Pistache::Http::Code::Ok, to_string(configFile->config),MIME(Application, Json));
     response.headers().add<Pistache::Http::Header::ContentType>(MIME(Application, Json));
-
+    if(initInputVideo){
+        imageProcessor->initInput();
+    }
 }
 
 void JetsonEndpoint::getConfig(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response)

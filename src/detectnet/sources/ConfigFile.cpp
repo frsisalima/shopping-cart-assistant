@@ -224,4 +224,20 @@ bool ConfigFile::getEnableBeepAlert() {
     return config["enable-beep-alert"];
 }
 
+void ConfigFile::setSegmentationClasses(std::string classes) {
+    config["seg-classes"]=classes;
+}
+
+std::string ConfigFile::getSegmentationClasses() {
+    return config["seg-classes"];
+}
+
+void ConfigFile::setSegmentationColors(std::string colors) {
+    config["seg-colors"]=colors;
+}
+
+std::string ConfigFile::getSegmentationColors() {
+    return config["seg-colors"];
+}
+
 

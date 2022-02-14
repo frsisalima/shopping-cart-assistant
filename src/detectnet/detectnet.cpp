@@ -21,7 +21,7 @@ int main(int argc, char** argv )
     ConfigFile configFile = loadConfigFile(cmdLine);
     ImageProcessor imageProcessor(&configFile,cmdLine);
 
-    JetsonEndpoint jetsonEndpoint(imageProcessor, &configFile);
+    JetsonEndpoint jetsonEndpoint(&imageProcessor, &configFile);
     jetsonEndpoint.init(2);
 
    std::thread threadProcess([&imageProcessor](){

@@ -278,16 +278,26 @@ void ImageProcessor::objectDetection(Mat &image, detectNet::Detection* detection
 
 void ImageProcessor::initNetworks() {
     std::thread tInit([this](){
-        status ="INITIALIZING NETWORK DETECTION";
-        cmdLine.AddArg(("--network="+ configFile->getDetectionNetwork()).c_str());
-        cmdLine.AddArg(("--labels="+ configFile->getDetectionLabels()).c_str());
-        cmdLine.AddArg(("--input-blob="+ configFile->getDetectionNetworkInputBlob()).c_str());
-        cmdLine.AddArg(("--output-cvg="+ configFile->getDetectionNetworkOutputCvg()).c_str());
-        cmdLine.AddArg(("--output-bbox="+ configFile->getDetectionNetworkOutputBbox()).c_str());
+        commandLine commandLineDetect= cmdLine;
+        commandLine commandLineSeg= cmdLine;
 
-        net = detectNet::Create(cmdLine);
+        commandLineDetect.AddArg(("--network="+ configFile->getDetectionNetwork()).c_str());
+        commandLineDetect.AddArg(("--labels="+ configFile->getDetectionLabels()).c_str());
+        commandLineDetect.AddArg(("--input-blob="+ configFile->getDetectionNetworkInputBlob()).c_str());
+        commandLineDetect.AddArg(("--output-cvg="+ configFile->getDetectionNetworkOutputCvg()).c_str());
+        commandLineDetect.AddArg(("--output-bbox="+ configFile->getDetectionNetworkOutputBbox()).c_str());
+
+        commandLineSeg.AddArg(("--network="+ configFile->getSegmentationNetwork()).c_str());
+        commandLineSeg.AddArg(("--labels="+ configFile->getSegmentationClasses()).c_str());
+        commandLineSeg.AddArg(("--colors="+ configFile->getSegmentationColors()).c_str());
+        commandLineSeg.AddArg("--input-blob=input_0");
+        commandLineSeg.AddArg("--output-blob=output_0");
+
+
+        status ="INITIALIZING NETWORK DETECTION";
+        net = detectNet::Create(commandLineDetect);
         status ="INITIALIZING NETWORK SEGMENTATION";
-        segmentNet = segNet::Create(segNet::NetworkTypeFromStr(configFile->getSegmentationNetwork().c_str()));
+        segmentNet = segNet::Create(commandLineSeg);
         segmentNet->SetOverlayAlpha(150.0f);
         status ="PROCESSING";
     });
@@ -295,12 +305,13 @@ void ImageProcessor::initNetworks() {
 }
 
 void ImageProcessor::initInput() {
-    cmdLine.AddArg(("--input="+configFile->getInput()).c_str());
-    cmdLine.AddArg(("--input-codec="+ configFile->getInputCodec()).c_str());
-    cmdLine.AddArg(("--input-height="+ to_string(configFile->getInputHeight())).c_str());
-    cmdLine.AddArg(("--input-width="+ to_string(configFile->getInputWidth())).c_str());
-    cmdLine.AddArg(("--input-loop="+ to_string(configFile->getInputLoop())).c_str());
-    input = videoSource::Create(cmdLine, ARG_POSITION(0));
+    commandLine commandLine;
+    commandLine.AddArg(("--input="+configFile->getInput()).c_str());
+    commandLine.AddArg(("--input-codec="+ configFile->getInputCodec()).c_str());
+    commandLine.AddArg(("--input-height="+ to_string(configFile->getInputHeight())).c_str());
+    commandLine.AddArg(("--input-width="+ to_string(configFile->getInputWidth())).c_str());
+    commandLine.AddArg(("--input-loop="+ to_string(configFile->getInputLoop())).c_str());
+    input = videoSource::Create(commandLine, ARG_POSITION(0));
 }
 
 ImageProcessor::ImageProcessor() {
