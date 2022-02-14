@@ -18,6 +18,7 @@ void Streamer::send(cv::Mat image,std::string text){
         rectangle( image, cv::Point( 0, 0), cv::Point( image.cols, 40), cv::Scalar( 0, 0, 0 ),cv::FILLED,cv::LINE_8 );
         putText(image, text, cv::Point(30, 30), cv::FONT_HERSHEY_SIMPLEX, 1,cv::Scalar(0, 255, 0), 2);
         std::vector<uchar> buff_hsv;
+        cv::cvtColor( image, image, cv::COLOR_BGR2RGB);
         imencode(".jpg", image, buff_hsv, params);
         streamer->publish("/hsv.mp4", std::string(buff_hsv.begin(), buff_hsv.end()));
     }

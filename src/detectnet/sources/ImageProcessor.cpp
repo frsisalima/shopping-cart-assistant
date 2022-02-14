@@ -191,7 +191,7 @@ void ImageProcessor::drawPolygon(Mat &image, bool obstacles){
     Mat contours = Mat(contour);
     const Point *pts = (const cv::Point*) contours.data;
     int npts = contours.rows;
-    polylines(image, &pts, &npts, 1, true,obstacles?Scalar(0, 0, 255):Scalar(0, 255, 0),8,lineType);
+    polylines(image, &pts, &npts, 1, true,obstacles?Scalar(255, 0, 0):Scalar(0, 255, 0),8,lineType);
 }
 
 bool ImageProcessor::detectObstacle(Mat image,Rect rect){
@@ -250,7 +250,7 @@ void ImageProcessor::objectDetection(Mat &image, detectNet::Detection* detection
             Scalar color = cv::Scalar(50, 255, 0);
             if(rect.height > 600 && rect.width  >300){
                 nearPerson= nearPerson+ 1;
-                color = cv::Scalar(0, 0, 255);
+                color = cv::Scalar(255, 0, 0);
             }
             if(configFile->getEnableDraw()){
                 rectangle(image, rect, color, 5, cv::LINE_AA);
