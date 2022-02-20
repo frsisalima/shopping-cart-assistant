@@ -1,5 +1,6 @@
 {
-  "input": "/dev/video0",
+  "input-cam": "/dev/video0",
+  "input": "videos/video9.mp4",
   "input-width": 1080,
   "input-height": 720,
   "input-loop": -1,
@@ -9,7 +10,7 @@
   "output-bbox":"boxes",
   "output-cvg":"scores",
   "labels":"/home/jetson/tmp/tmp.oLIZ6KoL32/build/aarch64/bin/networks/ssd-tfm/labels.txt",
-  "input-codec": "",
+  "input-codec": "h264",
   "seg-network":"/home/jetson/tmp/tmp.oLIZ6KoL32/build/aarch64/bin/networks/FCN-ResNet18-Cityscapes-512x256/fcn_resnet18.onnx",
   "seg-classes":"/home/jetson/tmp/tmp.oLIZ6KoL32/build/aarch64/bin/networks/FCN-ResNet18-Cityscapes-512x256/classes.txt",
   "seg-colors":"/home/jetson/tmp/tmp.oLIZ6KoL32/build/aarch64/bin/networks/FCN-ResNet18-Cityscapes-512x256/colors.txt",

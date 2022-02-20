@@ -5,9 +5,9 @@
 #include "../headers/Streamer.h"
 
 void Streamer::start(int port){
-    params = {cv::IMWRITE_JPEG_QUALITY, 90};
+    params = {cv::IMWRITE_JPEG_QUALITY, 80};
     std::cout << " Streamer::start port=" << port<< "\n";
-    streamer->start(port);
+    streamer->start(port,2);
 
     std::cout << " Streamer::start ok" << "\n";
 

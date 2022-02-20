@@ -11,6 +11,9 @@ class TTS {
 private:
     bool endTTS=false;
     std::string textToSpeak="";
+    std::string lastTextToSpeak="";
+    int similarTextCont=0;
+    int similarTextMaxCont=120;
    // std::thread ttsThread;
     void speakToNative(std::string text);
 public:

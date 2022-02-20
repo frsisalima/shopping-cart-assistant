@@ -9,7 +9,8 @@ void Ocr::init()
 {
     ocr = new tesseract::TessBaseAPI();
     ocr->Init(NULL, "spa", tesseract::OEM_LSTM_ONLY);
-    ocr->SetPageSegMode(tesseract::PSM_AUTO);
+    //ocr->SetPageSegMode(tesseract::PSM_AUTO);
+   // ocr->SetPageSegMode(tesseract::PSM_AUTO_OSD);
     ocr->SetVariable("tessedit_char_whitelist","ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     ocr->SetVariable("debug_file", "NUL");
 }

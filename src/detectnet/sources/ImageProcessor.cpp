@@ -2,7 +2,6 @@
 // Created by Fabricio Sisalima on 12/2/22.
 //
 
-#include <regex>
 #include "../headers/ImageProcessor.h"
 
 ImageProcessor::ImageProcessor(ConfigFile* configFile, commandLine &cmdLine) {
@@ -216,27 +215,6 @@ bool ImageProcessor::detectObstacle(Mat image,Rect rect){
     return  obstacles > 0;
 }
 
-void ImageProcessor::processOcr(Mat &image, Rect rect){
-    if(rect.width<0 ||rect.height<0 || rect.x+rect.width>image.cols || rect.y+rect.height>image.rows)return;
-    Mat imgSign = image(rect);
-    cv::cvtColor( imgSign, imgSign, CV_BGR2GRAY );
-    imgSign = imgSign > 200;
-    bitwise_not(imgSign, imgSign);
-    string textOcr= ocr->getText(imgSign);
-    if(textOcr.length()>3 && configFile->getSignTexts().find(textOcr)!= string::npos){
-        if(configFile->getEnableTTS() && textOcr!="" && textOcr!=" "){
-            tts->speak( std::regex_replace(configFile->getMsgSign(),std::regex("\\$name"),textOcr));
-        }
-    }
-
-    if(configFile->getEnableDraw()){
-        cv::putText(image, textOcr, cv::Point(rect.x, rect.y-10), cv::FONT_HERSHEY_SIMPLEX, 1,cv::Scalar(0, 255, 0), 2);
-    }
-    // cv::rectangle(image, rect, cv::Scalar(255, 0, 255), 2, cv::LINE_AA);
-    // cv::cvtColor( imgSign, imgSign, CV_GRAY2BGR );
-    // imgSign.copyTo(image(cv::Rect(0,0,imgSign.cols, imgSign.rows)));
-}
-
 void ImageProcessor::objectDetection(Mat &image, detectNet::Detection* detections, int numDetections, detectNet* net) {
     int nearPerson =0;
     for( int n=0; n < numDetections; n++ )
@@ -247,13 +225,15 @@ void ImageProcessor::objectDetection(Mat &image, detectNet::Detection* detection
 
         std::string classDetected =  net->GetClassDesc(detections[n].ClassID);
         if(classDetected == "Person" || classDetected == "person" || classDetected == "-m-01g317"){
-            Scalar color = cv::Scalar(50, 255, 0);
-            if(rect.height > 600 && rect.width  >300){
-                nearPerson= nearPerson+ 1;
-                color = cv::Scalar(255, 0, 0);
-            }
-            if(configFile->getEnableDraw()){
-                rectangle(image, rect, color, 5, cv::LINE_AA);
+            if(rect.width  <(image.cols*0.5) && rect.width  <(rect.height*0.8)){
+                Scalar color = cv::Scalar(50, 255, 0);
+                if(rect.height > 500 && rect.width  >200){
+                    nearPerson= nearPerson+ 1;
+                    color = cv::Scalar(255, 0, 0);
+                }
+                if(configFile->getEnableDraw()){
+                    rectangle(image, rect, color, 5, cv::LINE_AA);
+                }
             }
         }
         if(classDetected == "sign"){
@@ -274,6 +254,61 @@ void ImageProcessor::objectDetection(Mat &image, detectNet::Detection* detection
     }else{
         countObstaclesPerson = 0;
     }
+}
+
+void ImageProcessor::processOcr(Mat &image, Rect rect){
+
+    if(rect.width<0 ||rect.height<0 || rect.x+rect.width>image.cols || rect.y+rect.height>image.rows)return;
+    Mat imgSign = image(rect);
+    cv::cvtColor( imgSign, imgSign, CV_BGR2GRAY );
+    imgSign = imgSign > 150;
+    bitwise_not(imgSign, imgSign);
+    string textOcr = getSingTextAvailable(ocr->getText(imgSign));
+    if(textOcr.empty()){
+        imgSign = image(rect);
+        cv::cvtColor( imgSign, imgSign, CV_BGR2GRAY );
+        imgSign = imgSign > 90;
+        bitwise_not(imgSign, imgSign);
+        textOcr = getSingTextAvailable(ocr->getText(imgSign));
+    }
+
+    if(textOcr.empty()){
+        imgSign = image(rect);
+        cv::cvtColor( imgSign, imgSign, CV_BGR2GRAY );
+        imgSign = imgSign > 50;
+        bitwise_not(imgSign, imgSign);
+        textOcr = getSingTextAvailable(ocr->getText(imgSign));
+    }
+    if(configFile->getEnableTTS() && textOcr!=""){
+        tts->speak( std::regex_replace(configFile->getMsgSign(),std::regex("\\$name"),textOcr));
+    }
+
+    if(configFile->getEnableDraw()){
+        cv::putText(image, textOcr, cv::Point(rect.x, rect.y-10), cv::FONT_HERSHEY_SIMPLEX, 1,cv::Scalar(0, 255, 0), 2);
+    }
+   //  cv::rectangle(image, rect, cv::Scalar(255, 0, 255), 2, cv::LINE_AA);
+  //   cv::cvtColor( imgSign, imgSign, CV_GRAY2BGR );
+   //  imgSign.copyTo(image(cv::Rect(0,0,imgSign.cols, imgSign.rows)));
+}
+
+string ImageProcessor::getSingTextAvailable(std::string textOcr) {
+    if(textOcr.length()>=3 && configFile->getSignTexts().find(textOcr)!= string::npos) {
+        if (signsTexts.empty()) {
+            string str = configFile->getSignTexts();
+            string regex_str = ",";
+            char *token = strtok(str.data(), regex_str.data());
+            while (token != NULL) {
+                signsTexts.push_back(token);
+                token = strtok(NULL, regex_str.data());
+            }
+        }
+        for (const string &value: signsTexts) {
+            if (value.find(textOcr) != string::npos || textOcr.find(value) != string::npos) {
+                return value;
+            }
+        }
+    }
+    return "";
 }
 
 void ImageProcessor::initNetworks() {

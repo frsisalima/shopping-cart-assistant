@@ -15,6 +15,9 @@
 #include <json.hpp>
 #include <utility>
 #include <opencv2/imgproc/types_c.h>
+#include <iostream>
+#include <string>
+#include <regex>
 
 #include "videoSource.h"
 #include "segNet.h"
@@ -63,6 +66,7 @@ private:
     int framesLimiteToDetermineObstaclePerson = 10;
     bool enableProcess=true;
     string  status ="INITIALIZING";
+    vector<std::string> signsTexts;
 
     commandLine cmdLine;
 
@@ -71,6 +75,7 @@ private:
     void drawPolygon(Mat &image, bool obstacles);
     bool detectObstacle(Mat image,Rect rect);
     void processOcr(Mat &image, Rect rect);
+    string getSingTextAvailable(string text);
     void objectDetection(Mat &image, detectNet::Detection* detections, int numDetections, detectNet* net);
 
 public:

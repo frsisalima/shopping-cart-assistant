@@ -7,7 +7,18 @@
 #include "../headers/Tts.h"
 
 void TTS::speak(std::string text){
-    this->textToSpeak = text;
+    if(lastTextToSpeak==text){
+        similarTextCont=similarTextCont+1;
+        if(similarTextCont==similarTextMaxCont){
+            this->textToSpeak = text;
+            this->lastTextToSpeak = text;
+            this->similarTextCont=0;
+        }
+    }else{
+        this->textToSpeak = text;
+        this->lastTextToSpeak = text;
+        this->similarTextCont=0;
+    }
 }
 
 void TTS::start() {
@@ -32,7 +43,7 @@ void TTS::stop() {
 }
 
 void TTS::speakToNative(std::string text) {
-    std::string command="python3 tts.py '";
+    std::string command="python3 /usr/local/bin/tts.py '";
     command.append(text);
     command.append("'");
     FILE* in = popen(command.c_str(), "r");
