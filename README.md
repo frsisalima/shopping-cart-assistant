@@ -1,27 +1,34 @@
-upgrade cmake 3.19.5
-wget https://github.com/Kitware/CMake/releases/download/v3.19.5/cmake-3.19.5-Linux-aarch64.tar.gz -q --show-progress
-tar -zxvf cmake-3.19.5-Linux-aarch64.tar.gz
-cd cmake-3.19.5-Linux-aarch64/
-sudo cp -rf bin/ doc/ share/ /usr/local/
-sudo cp -rf man/* /usr/local/man
-sync
-cmake --version
+##Car shopping assistant
+Software to help blind people in supermarkets, this project works specifically on jetson nano
 
-sudo su
-pip3 install meson --ignore-installed
-//reload shell
-git clone https://github.com/pistacheio/pistache.git
-meson setup build
-meson install -C build
+This project was build with:
 
+* Jetson Inference to interact with TensorRT
+* OpenCV
+* C++ MJPEG pver HTTP Library - video streaming
+* Pistache to build the Rest Api
 
-sudo apt install libnm-dev
-
-
-IFNAME="wlan0"
-CON_NAME="wifiname"
-CON_PASS="wifipass"
-sudo nmcli con add type wifi ifname $IFNAME con-name $CON_NAME autoconnect yes ssid $CON_NAME
-sudo nmcli con modify $CON_NAME 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
-sudo nmcli con modify $CON_NAME wifi-sec.psk $CON_PASS
-sudo nmcli con up $CON_NAME
+#### Project structure:
+* data:
+  * images/ to test
+  * videos/ to test
+  * networks/ directory where the models are stored 
+  * config.json config file to the app
+  * detectnet.service linux service to run as service in system
+* src:
+    * detectnet/
+      * headers/
+      * sources/
+      * detectnet.cpp main file
+      * CMakeLists.txt cmake config
+      
+#### compile and run:
+```shell script
+mkdir build && cd build
+```
+```shell script
+cmake .. && make
+```
+```shell script
+./detectnet --config=../data/config.json
+```
